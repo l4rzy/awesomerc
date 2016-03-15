@@ -10,7 +10,7 @@
 theme                               = {}
 
 theme.confdir                       = os.getenv("HOME") .. "/.config/awesome/themes/multicolor"
-theme.wallpaper                     = theme.confdir .. "/wall.jpg"
+theme.wallpaper                     = theme.confdir .. "/wall.png"
 
 theme.font                          = "Monospace 9"
 --theme.taglist_font                =
