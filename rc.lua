@@ -165,8 +165,8 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the upper left
     local left_layout = wibox.layout.fixed.horizontal()
     left_layout:add(mytaglist[s])
-    left_layout:add(mypromptbox[s])
 	left_layout:add(spacer)
+	left_layout:add(mypromptbox[s])
 	local middle_layout = wibox.layout.fixed.horizontal()
 	middle_layout:add(mytasklist[s])
     -- Widgets that are aligned to the upper right
@@ -361,6 +361,7 @@ awful.rules.rules = {
 	                 size_hints_honor = false } },
 }
 
+--set up floating windows
 for i in ipairs(floating_w) do
 	table.insert(awful.rules.rules,{
 		rule = {class = floating_w[i]},
