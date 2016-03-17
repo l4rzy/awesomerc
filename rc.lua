@@ -199,7 +199,10 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey }, "Escape", awful.tag.history.restore),
-
+	
+	-- resize tilling windows 
+	awful.key({ modkey, "Shift" }, "h", function () awful.client.incwfact( -0.05) end),	
+	awful.key({ modkey }, "h",          function () awful.tag.incmwfact(-0.05) end),	
     -- By direction client focus
     awful.key({ modkey }, "j",
         function()
@@ -247,7 +250,7 @@ globalkeys = awful.util.table.join(
 	awful.key({ modkey, "Shift"   }, "p",	   function () awful.util.spawn("thunar") end),
 
     -- MPD
-    awful.key({         }, "XF86AudioPlay", function () awful.util.spawn("mpc toggle") end),
+    awful.key({         }, "XF86AudioPlay", function () awful.util.spawn("mpc toggle")  end),
     awful.key({         }, "XF86AudioNext", function () awful.util.spawn("mpc next")	end),
 	awful.key({			}, "XF86AudioPrev", function () awful.util.spawn("mpc prev")	end),
 
@@ -273,7 +276,17 @@ globalkeys = awful.util.table.join(
                   mypromptbox[mouse.screen].widget,
                   awful.util.eval, nil,
                   awful.util.getdir("cache") .. "/history_eval")
-              end)
+              end),
+
+
+	awful.key({ modkey, "Shift"   }, "r",
+          function ()
+              awful.prompt.run({ prompt = "Run in terminal: " },
+                  mypromptbox[mouse.screen].widget,
+                  function (...) awful.util.spawn(terminal .. " -e " .. ...) end,
+                  awful.completion.shell,
+                  awful.util.getdir("cache") .. "/history")
+          end)	
 )
 
 clientkeys = awful.util.table.join(
