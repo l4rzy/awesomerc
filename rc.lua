@@ -55,7 +55,7 @@ editor_cmd = terminal .. " -e " .. editor
 -- user defined
 browser    = "chromium"
 browser2   = "firefox"
-gui_editor = "subl3"
+gui_editor = "textadept"
 graphics   = "gimp"
 mail       = terminal .. " -e mutt "
 
@@ -361,7 +361,7 @@ clientbuttons = awful.util.table.join(
 root.keys(globalkeys)
 -- }}}
 
-local floating_w = {"Audacious","Smplayer2","feh","Thunar","Leafpad","Engrampa","XTerm","Termite"}
+local floating_w = {"Audacious","Smplayer2","feh","Thunar","Leafpad","Engrampa","XTerm","Termite","Textadept"}
 -- {{{ Rules
 awful.rules.rules = {
     -- All clients will match this rule.
