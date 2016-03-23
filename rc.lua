@@ -201,8 +201,11 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "Escape", awful.tag.history.restore),
 	
 	-- resize tilling windows 
-	awful.key({ modkey, "Shift" }, "h", function () awful.client.incwfact( -0.05) end),	
-	awful.key({ modkey }, "h",          function () awful.tag.incmwfact(-0.05) end),	
+	-- awful.key({ modkey, "Shift" }, "h", function () awful.tag.incmwfact(1) end),	
+	awful.key({ modkey, "Mod1"    }, "Right",     function () awful.tag.incmwfact( 0.01)    end),
+	awful.key({ modkey, "Mod1"    }, "Left",     function () awful.tag.incmwfact(-0.01)    end),
+	awful.key({ modkey, "Mod1"    }, "Down",     function () awful.client.incwfact( 0.01)    end),
+	awful.key({ modkey, "Mod1"    }, "Up",     function () awful.client.incwfact(-0.01)    end),
     -- By direction client focus
     awful.key({ modkey }, "j",
         function()
@@ -372,6 +375,14 @@ awful.rules.rules = {
                      keys = clientkeys,
                      buttons = clientbuttons,
 	                 size_hints_honor = false } },
+
+	{ rule = { class = "Xfce4-notifyd" },
+		properties = {
+			focusable = false,
+			border_width = 0
+		}
+
+	},
 }
 
 --set up floating windows
@@ -386,62 +397,13 @@ end
 
 -- {{{ Signals
 -- signal function to execute when a new client appears.
---local sloppyfocus_last = {c=nil}
 client.connect_signal("manage", function (c, startup)
-    -- Enable sloppy focus
-	--[[
-    client.connect_signal("mouse::enter", function(c)
-         if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
-            and awful.client.focus.filter(c) then
-             -- Skip focusing the client if the mouse wasn't moved.
-             if c ~= sloppyfocus_last.c then
-                 client.focus = c
-                 sloppyfocus_last.c = c
-             end
-         end
-     end)
-	--]]
-    local titlebars_enabled = false
-    if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
-        -- buttons for the titlebar
-        local buttons = awful.util.table.join(
-                awful.button({ }, 1, function()
-                    client.focus = c
-                    c:raise()
-                    awful.mouse.client.move(c)
-                end),
-                awful.button({ }, 3, function()
-                    client.focus = c
-                    c:raise()
-                    awful.mouse.client.resize(c)
-                end)
-                )
+    if c.class == "Xfce4-notifyd" then
+		--dont focus it 
 
-        -- widgets that are aligned to the right
-        local right_layout = wibox.layout.fixed.horizontal()
-        right_layout:add(awful.titlebar.widget.floatingbutton(c))
-        right_layout:add(awful.titlebar.widget.maximizedbutton(c))
-        right_layout:add(awful.titlebar.widget.stickybutton(c))
-        right_layout:add(awful.titlebar.widget.ontopbutton(c))
-        right_layout:add(awful.titlebar.widget.closebutton(c))
-
-        -- the title goes in the middle
-        local middle_layout = wibox.layout.flex.horizontal()
-        local title = awful.titlebar.widget.titlewidget(c)
-        title:set_align("center")
-        middle_layout:add(title)
-        middle_layout:buttons(buttons)
-
-        -- now bring it all together
-        local layout = wibox.layout.align.horizontal()
-        layout:set_right(right_layout)
-        layout:set_middle(middle_layout)
-
-        awful.titlebar(c,{size=16}):set_widget(layout)
-    end
+	end
 end)
 
--- No border for maximized clients
 client.connect_signal("focus",
     function(c)
         if c.maximized_horizontal == true and c.maximized_vertical == true then
@@ -449,8 +411,14 @@ client.connect_signal("focus",
         else
             c.border_color = beautiful.border_focus
         end
-    end)
-client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+    end
+)
+
+client.connect_signal("unfocus", 
+	function(c) 
+		c.border_color = beautiful.border_normal 
+	end
+)
 -- }}}
 
 -- {{{ Arrange signal handler
