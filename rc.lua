@@ -272,16 +272,7 @@ globalkeys = awful.util.table.join(
         end),
     -- User programs
     awful.key({ modkey, "Shift" }, "f", function () awful.util.spawn("j4-dmenu-desktop --display-binary --dmenu='dmenu -b -i'") end),
-    -- Prompt
-    awful.key({ modkey }, "x",
-              function ()
-                  awful.prompt.run({ prompt = "Run Lua code: " },
-                  mypromptbox[mouse.screen].widget,
-                  awful.util.eval, nil,
-                  awful.util.getdir("cache") .. "/history_eval")
-              end),
-
-
+	-- run in terminal prompt
 	awful.key({ modkey, "Shift"   }, "r",
           function ()
               awful.prompt.run({ prompt = "Run in terminal: " },
@@ -400,7 +391,7 @@ end
 client.connect_signal("manage", function (c, startup)
     if c.class == "Xfce4-notifyd" then
 		--dont focus it 
-
+		
 	end
 end)
 
