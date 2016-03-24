@@ -4,7 +4,7 @@ awful.rules     = require("awful.rules")
                   require("awful.autofocus")
 local wibox     = require("wibox")
 local beautiful = require("beautiful")
-local uselessfair  = require("uselessfair")
+local gaps		= require("gaps")
 local notify	= require("lgi").require("Notify")
 
 -- {{{ Error handling
@@ -60,7 +60,7 @@ graphics   = "gimp"
 mail       = terminal .. " -e mutt "
 
 local layouts = {
-	uselessfair,				--1
+	gaps,				--1
     awful.layout.suit.floating, --2
     awful.layout.suit.tile,     --3
     awful.layout.suit.max       --4
@@ -69,7 +69,7 @@ local layouts = {
 
 -- {{{ Tags
 tags = {
-   names = { "W", "T", "I", "M", "F", "O" },
+   names = { "一", "二", "三", "四", "五", "六" },
    layout = { layouts[1], layouts[1], layouts[4], layouts[3], layouts[2], layouts[3] }
 }
 for s = 1, screen.count() do
@@ -369,11 +369,21 @@ awful.rules.rules = {
 
 	{ rule = { class = "Xfce4-notifyd" },
 		properties = {
-			focusable = false,
+			type = "notification",
 			border_width = 0
 		}
 
 	},
+
+    { rule = { class = "chromium" },
+          properties = { border_width = 10 } },
+
+	-- floating windows always have border 
+	{rule = { floating = true },
+		properties = {
+			border_width = beautiful.border_width,
+		}
+	}
 }
 
 --set up floating windows
