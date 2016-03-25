@@ -372,7 +372,7 @@ awful.rules.rules = {
 	{ rule = { class = "Xfce4-notifyd" },
 		properties = { type = "notification",
 					   focus = false,
-					   border_color = "cc3455"} },
+					   border_color = "22b726"} },
 	{ rule = { class = "chromium" },
 		properties = { border_width = 0 } },
 
@@ -394,9 +394,9 @@ end
 -- {{{ Signals
 -- signal function to execute when a new client appears.
 client.connect_signal("manage", function (c, startup)
-    if c.class == "Xfce4-notifyd" then
+    --if c.class == "Xfce4-notifyd" then
 		 
-	end
+	--end
 end)
 
 client.connect_signal("focus",
