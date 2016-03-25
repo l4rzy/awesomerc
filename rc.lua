@@ -4,7 +4,7 @@ awful.rules     = require("awful.rules")
                   require("awful.autofocus")
 local wibox     = require("wibox")
 local beautiful = require("beautiful")
-local gaps		= require("gaps")
+local gaps		= require("treesome")
 local notify	= require("lgi").require("Notify")
 
 -- {{{ Error handling
@@ -62,7 +62,7 @@ mail       = terminal .. " -e mutt "
 local layouts = {
 	gaps,				--1
     awful.layout.suit.floating, --2
-    awful.layout.suit.tile,     --3
+    awful.layout.suit.spiral,     --3
     awful.layout.suit.max       --4
 }
 -- }}}
@@ -360,30 +360,23 @@ local floating_w = {"Audacious","Smplayer2","feh","Thunar","Leafpad","Engrampa",
 awful.rules.rules = {
     -- All clients will match this rule.
     { rule = { },
-      properties = { border_width = beautiful.border_width,
-                     border_color = beautiful.border_normal,
-                     focus = awful.client.focus.filter,
-                     keys = clientkeys,
-                     buttons = clientbuttons,
-	                 size_hints_honor = false } },
+		properties = { border_width = beautiful.border_width,
+					 border_color = beautiful.border_normal,
+					 focus = awful.client.focus.filter,
+					 keys = clientkeys,
+					 buttons = clientbuttons,
+					 size_hints_honor = false } },
 
 	{ rule = { class = "Xfce4-notifyd" },
-		properties = {
-			type = "notification",
-			border_width = 0
-		}
+		properties = { type = "notification",
+					   focus = false,
+					   border_color = "cc3455"} },
+	{ rule = { class = "chromium" },
+		properties = { border_width = 0 } },
 
-	},
+	{ rule = { class = "URxvt" },
+		properties = { size_hints_honor = true } },
 
-    { rule = { class = "chromium" },
-          properties = { border_width = 10 } },
-
-	-- floating windows always have border 
-	{rule = { floating = true },
-		properties = {
-			border_width = beautiful.border_width,
-		}
-	}
 }
 
 --set up floating windows
@@ -400,8 +393,7 @@ end
 -- signal function to execute when a new client appears.
 client.connect_signal("manage", function (c, startup)
     if c.class == "Xfce4-notifyd" then
-		--dont focus it 
-		
+		 
 	end
 end)
 
