@@ -62,7 +62,7 @@ mail       = terminal .. " -e mutt "
 local layouts = {
 	gaps,				--1
     awful.layout.suit.floating, --2
-    awful.layout.suit.spiral,     --3
+    awful.layout.suit.fair,     --3
     awful.layout.suit.max       --4
 }
 -- }}}
@@ -88,7 +88,7 @@ end
 
 -- Spacer
 spacer = wibox.widget.textbox(" | ")
-
+mytextclock = awful.widget.textclock()
 -- Create a wibox for each screen and add it
 mywibox = {}
 mybottomwibox = {}
@@ -169,10 +169,12 @@ for s = 1, screen.count() do
 	left_layout:add(mypromptbox[s])
 	local middle_layout = wibox.layout.fixed.horizontal()
 	middle_layout:add(mytasklist[s])
+	
     -- Widgets that are aligned to the upper right
     local right_layout = wibox.layout.fixed.horizontal()
+
+	right_layout:add(mytextclock)	
     if s == 1 then right_layout:add(wibox.widget.systray()) end
-	
     right_layout:add(mylayoutbox[s])
     -- Now bring it all together (with the tasklist in the middle)
     local layout = wibox.layout.align.horizontal()
