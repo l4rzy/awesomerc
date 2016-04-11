@@ -5,34 +5,31 @@ awful.rules     = require("awful.rules")
 local wibox     = require("wibox")
 local beautiful = require("beautiful")
 local gaps		= require("treesome")
-local notify	= require("lgi").require("Notify")
-
+local naughty   = require("naughty")
 -- {{{ Error handling
 if awesome.startup_errors then
-	notify.init("error")
-	_err = notify.Notification.new("Oops, there were errors during startup!",
-			awesome.startup_errors,"application-exit")
-	_err:show()
+    naughty.notify({ preset = naughty.config.presets.critical,
+                     title = "Oops, there were errors during startup!",
+                     text = awesome.startup_errors })
 end
 
 do
     local in_error = false
     awesome.connect_signal("debug::error", function (err)
+        -- Make sure we don't go into an endless error loop
         if in_error then return end
         in_error = true
 
-		notify.init("Error")
-		_err = notify.Notification.new("Oops, an error happened!",
-			err,"application-exit")
-		_err:show()
-
+        naughty.notify({ preset = naughty.config.presets.critical,
+                         title = "Oops, an error happened!",
+                         text = err })
         in_error = false
     end)
 end
 -- }}}
 
 autostart_cmd = {"urxvtd", "thunar --daemon", "ibus-daemon -drx", "xfce4-volumed-pulse", 
-	"/usr/lib/polkit-gnome/gtkpolkit", "xfce4-power-manager", "/usr/lib/xfce4/notifyd/xfce4-notifyd"}
+	"/usr/lib/polkit-gnome/gtkpolkit", "xfce4-power-manager"}
 function autostart(cmd) 
 	for i in ipairs(cmd) do
 		awful.util.spawn_with_shell(cmd[i])
@@ -69,7 +66,7 @@ local layouts = {
 
 -- {{{ Tags
 tags = {
-   names = { "一", "二", "三", "四", "五", "六" },
+   names = { "W", "T", "I", "F", "P", "O" },
    layout = { layouts[1], layouts[1], layouts[4], layouts[3], layouts[2], layouts[3] }
 }
 for s = 1, screen.count() do
@@ -357,7 +354,7 @@ clientbuttons = awful.util.table.join(
 root.keys(globalkeys)
 -- }}}
 
-local floating_w = {"Audacious","Smplayer2","feh","Thunar","Leafpad","Engrampa","XTerm","Termite","Textadept"}
+local floating_w = {"Audacious","Smplayer2","feh","Thunar","Engrampa","XTerm","Termite","Textadept"}
 -- {{{ Rules
 awful.rules.rules = {
     -- All clients will match this rule.
