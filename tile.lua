@@ -1,3 +1,10 @@
+---------------------------------------------------------------------------
+-- @author Donald Ephraim Curtis &lt;dcurtis@cs.uiowa.edu&gt;
+-- @author Julien Danjou &lt;julien@danjou.info&gt;
+-- @copyright 2009 Donald Ephraim Curtis
+-- @copyright 2008 Julien Danjou
+-- @release v3.5.9
+---------------------------------------------------------------------------
 
 -- Grab environment we need
 local ipairs = ipairs

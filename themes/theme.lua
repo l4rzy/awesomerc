@@ -12,7 +12,7 @@ theme                               = {}
 theme.confdir                       = os.getenv("HOME") .. "/.config/awesome/themes"
 theme.wallpaper                     = theme.confdir .. "/wallpapers/wall.png"
 
-theme.font                          = "Monospace 9"
+theme.font                          = "DejaVu Sans Mono 9"
 --theme.taglist_font                =
 theme.menu_bg_normal                = "#000000"
 theme.menu_bg_focus                 = "#000000"
