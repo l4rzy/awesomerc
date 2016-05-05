@@ -4,8 +4,8 @@ awful.rules     = require("awful.rules")
                   require("awful.autofocus")
 local wibox     = require("wibox")
 local beautiful = require("beautiful")
-local gaps		= require("treesome")
 local naughty   = require("naughty")
+local tile      = require("tile")
 -- {{{ Error handling
 if awesome.startup_errors then
     naughty.notify({ preset = naughty.config.presets.critical,
@@ -28,19 +28,17 @@ do
 end
 -- }}}
 
-autostart_cmd = {"urxvtd", "thunar --daemon", "ibus-daemon -drx", "xfce4-volumed-pulse", 
-	"/usr/lib/polkit-gnome/gtkpolkit", "xfce4-power-manager"}
+autostart_cmd = {"urxvtd", "thunar --daemon", "ibus-daemon -drx", "xfce4-volumed-pulse", "/usr/lib/polkit-gnome/gtkpolkit", "redshift"}
 function autostart(cmd) 
-	for i in ipairs(cmd) do
-		awful.util.spawn_with_shell(cmd[i])
+	for i=1,#cmd do
+		awful.util.spawn_with_shell("runonce " .. cmd[i])
 	end
 end
 
 autostart(autostart_cmd)
-awful.util.spawn_with_shell("runonce redshift")
 
 -- beautiful init
-beautiful.init(os.getenv("HOME") .. "/.config/awesome/themes/multicolor/theme.lua")
+beautiful.init(os.getenv("HOME") .. "/.config/awesome/themes/theme.lua")
 
 -- common
 modkey     = "Mod4"
@@ -50,24 +48,22 @@ editor     = os.getenv("EDITOR") or "nano"
 editor_cmd = terminal .. " -e " .. editor
 
 -- user defined
-browser    = "chromium"
+browser    = "google-chrome-stable"
 browser2   = "firefox"
 gui_editor = "textadept"
 graphics   = "gimp"
 mail       = terminal .. " -e mutt "
 
 local layouts = {
-	gaps,				--1
-    awful.layout.suit.floating, --2
-    awful.layout.suit.fair,     --3
-    awful.layout.suit.max       --4
+    awful.layout.suit.tile,
+    tile
 }
 -- }}}
 
 -- {{{ Tags
 tags = {
-   names = { "W", "T", "I", "F", "P", "O" },
-   layout = { layouts[1], layouts[1], layouts[4], layouts[3], layouts[2], layouts[3] }
+   names = { "W", "T", "I", "F", "M", "O" },
+   layout = { layouts[1], layouts[2], layouts[1], layouts[1], layouts[1], layouts[1] }
 }
 for s = 1, screen.count() do
 -- Each screen has its own tag table.
@@ -90,8 +86,9 @@ mytextclock = awful.widget.textclock()
 mywibox = {}
 mybottomwibox = {}
 mypromptbox = {}
-mylayoutbox = {}
+--mylayoutbox = {}
 mytaglist = {}
+
 mytaglist.buttons = awful.util.table.join(
                     awful.button({ }, 1, awful.tag.viewonly),
                     awful.button({ modkey }, 1, awful.client.movetotag),
@@ -141,14 +138,14 @@ for s = 1, screen.count() do
     mypromptbox[s] = awful.widget.prompt()
 
 
-    -- We need one layoutbox per screen.
+    --[[ We need one layoutbox per screen.
     mylayoutbox[s] = awful.widget.layoutbox(s)
     mylayoutbox[s]:buttons(awful.util.table.join(
                             awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
                             awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
                             awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
                             awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
-
+    --]]
     -- Create a taglist widget
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
@@ -156,7 +153,7 @@ for s = 1, screen.count() do
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 	
     -- Create the upper wibox
-    mywibox[s] = awful.wibox({ position = "bottom", screen = s, height = 17 })
+    mywibox[s] = awful.wibox({ position = "bottom", screen = s, height = 16 })
     --border_width = 0, height =  20 })
 
     -- Widgets that are aligned to the upper left
@@ -172,7 +169,7 @@ for s = 1, screen.count() do
 
 	right_layout:add(mytextclock)	
     if s == 1 then right_layout:add(wibox.widget.systray()) end
-    right_layout:add(mylayoutbox[s])
+    --right_layout:add(mylayoutbox[s])
     -- Now bring it all together (with the tasklist in the middle)
     local layout = wibox.layout.align.horizontal()
     layout:set_left(left_layout)
@@ -250,7 +247,8 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, "r",      awesome.restart),
     awful.key({ modkey, "Shift"   }, "e",      awesome.quit),
 	awful.key({ modkey, "Shift"   }, "p",	   function () awful.util.spawn("thunar") end),
-
+    awful.key({ modkey, "Shift"   }, "l",      function () 
+        awful.util.spawn("i3lock -i ~/.i3/lock.png") end ),
     -- MPD
     awful.key({         }, "XF86AudioPlay", function () awful.util.spawn("mpc toggle")  end),
     awful.key({         }, "XF86AudioNext", function () awful.util.spawn("mpc next")	end),
@@ -354,7 +352,7 @@ clientbuttons = awful.util.table.join(
 root.keys(globalkeys)
 -- }}}
 
-local floating_w = {"Audacious","Smplayer2","feh","Thunar","Engrampa","XTerm","Termite","Textadept"}
+local floating_w = {"Audacious","Smplayer2","feh","Thunar","Engrampa","XTerm","Termite","Textadept","Telegram"}
 -- {{{ Rules
 awful.rules.rules = {
     -- All clients will match this rule.
@@ -366,15 +364,12 @@ awful.rules.rules = {
 					 buttons = clientbuttons,
 					 size_hints_honor = false } },
 
-	{ rule = { class = "Xfce4-notifyd" },
-		properties = { type = "notification",
-					   focus = false,
-					   border_color = "22b726"} },
-	{ rule = { class = "chromium" },
-		properties = { border_width = 0 } },
+    --{ rule = { class = "google-chrome" },
+	--	properties = { border_width = 0 } },
 
 	{ rule = { class = "URxvt" },
-		properties = { size_hints_honor = true } },
+		properties = { size_hints_honor = true,
+                     skip_taskbar = true } },
 
 }
 
@@ -389,20 +384,10 @@ end
 -- }}}
 
 -- {{{ Signals
--- signal function to execute when a new client appears.
-client.connect_signal("manage", function (c, startup)
-    --if c.class == "Xfce4-notifyd" then
-		 
-	--end
-end)
 
 client.connect_signal("focus",
     function(c)
-        if c.maximized_horizontal == true and c.maximized_vertical == true then
-            c.border_color = beautiful.border_normal
-        else
-            c.border_color = beautiful.border_focus
-        end
+        c.border_color = beautiful.border_focus
     end
 )
 
@@ -420,19 +405,7 @@ for s = 1, screen.count() do screen[s]:connect_signal("arrange", function ()
 
         if #clients > 0 then -- Fine grained borders and floaters control
             for _, c in pairs(clients) do -- Floaters always have borders
-                -- No borders with only one humanly visible client
-                if layout == "max" then
-                    c.border_width = 0
-                elseif awful.client.floating.get(c) or layout == "floating" then
-                    c.border_width = beautiful.border_width
-                elseif #clients == 1 then
-                    clients[1].border_width = beautiful.border_width
-                    if layout ~= "max" then
-                        awful.client.moveresize(0, 0, 2, 0, clients[1])
-                    end
-                else
-                    c.border_width = beautiful.border_width
-                end
+                c.border_width = beautiful.border_width
             end
         end
       end)
