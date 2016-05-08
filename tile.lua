@@ -121,7 +121,8 @@ local function do_tile(param, orientation)
             if not data[0] then
                 data[0] = {}
             end
-            coord = coord + tile_group(cls, wa, orientation, data[0], {first=1, last=nmaster, coord = coord, size = size})
+            coord = coord + tile_group(cls, wa, orientation, data[0], {first=1, last=nmaster, 
+                coord = coord, size = size})
         end
 
         if not place_master and nother > 0 then
@@ -141,7 +142,8 @@ local function do_tile(param, orientation)
                 if not data[i] then
                     data[i] = {}
                 end
-                coord = coord + tile_group(cls, wa, orientation, data[i], { first = first, last = last, coord = coord, size = size })
+                coord = coord + tile_group(cls, wa, orientation, data[i], { first = first, 
+                    last = last, coord = coord, size = size })
             end
         end
         place_master = not place_master

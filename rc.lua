@@ -5,7 +5,8 @@ awful.rules     = require("awful.rules")
 local wibox     = require("wibox")
 local beautiful = require("beautiful")
 local naughty   = require("naughty")
-local tile      = require("tile")
+local treesome  = require("treesome")
+
 -- {{{ Error handling
 if awesome.startup_errors then
     naughty.notify({ preset = naughty.config.presets.critical,
@@ -28,7 +29,27 @@ do
 end
 -- }}}
 
-autostart_cmd = {"urxvtd", "thunar --daemon", "ibus-daemon -drx", "xfce4-volumed-pulse", "/usr/lib/polkit-gnome/gtkpolkit", "redshift"}
+-- {{{ debug
+
+function debug_var(var)
+    if type(var) == "table" then
+        temp_x = ""
+        for i=1,#var do 
+            temp_x = temp_x .. " " .. var[i]
+        end
+    else 
+        temp_x = var
+    end
+
+    naughty.notify({ preset = naughty.config.presets.critical,
+                     title  = "!!!Debug!!!",
+                     text   = tostring(temp_x) })
+end
+
+-- }}}
+
+autostart_cmd = {"urxvtd", "thunar --daemon", "ibus-daemon -drx", 
+    "xfce4-volumed-pulse", "/usr/lib/polkit-gnome/gtkpolkit", "redshift"}
 function autostart(cmd) 
 	for i=1,#cmd do
 		awful.util.spawn_with_shell("runonce " .. cmd[i])
@@ -50,20 +71,20 @@ editor_cmd = terminal .. " -e " .. editor
 -- user defined
 browser    = "google-chrome-stable"
 browser2   = "firefox"
-gui_editor = "textadept"
+gui_editor = "textadeptjit"
 graphics   = "gimp"
 mail       = terminal .. " -e mutt "
 
 local layouts = {
     awful.layout.suit.tile,
-    tile
+    treesome
 }
 -- }}}
 
 -- {{{ Tags
 tags = {
    names = { "W", "T", "I", "F", "M", "O" },
-   layout = { layouts[1], layouts[2], layouts[1], layouts[1], layouts[1], layouts[1] }
+   layout = {layouts[2], layouts[2], layouts[1], layouts[1], layouts[1], layouts[1] }
 }
 for s = 1, screen.count() do
 -- Each screen has its own tag table.
@@ -94,8 +115,12 @@ mytaglist.buttons = awful.util.table.join(
                     awful.button({ modkey }, 1, awful.client.movetotag),
                     awful.button({ }, 3, awful.tag.viewtoggle),
                     awful.button({ modkey }, 3, awful.client.toggletag),
-                    awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
-                    awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
+                    awful.button({ }, 4, function(t) 
+                        awful.tag.viewnext(awful.tag.getscreen(t)) 
+                    end),
+                    awful.button({ }, 5, function(t) 
+                        awful.tag.viewprev(awful.tag.getscreen(t)) 
+                    end)
                     )
 mytasklist = {}
 mytasklist.buttons = awful.util.table.join(
@@ -138,19 +163,12 @@ for s = 1, screen.count() do
     mypromptbox[s] = awful.widget.prompt()
 
 
-    --[[ We need one layoutbox per screen.
-    mylayoutbox[s] = awful.widget.layoutbox(s)
-    mylayoutbox[s]:buttons(awful.util.table.join(
-                            awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
-                            awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
-                            awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
-                            awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
-    --]]
     -- Create a taglist widget
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
     -- Create a tasklist widget
-    mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
+    mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags,
+        mytasklist.buttons)
 	
     -- Create the upper wibox
     mywibox[s] = awful.wibox({ position = "bottom", screen = s, height = 16 })
@@ -198,10 +216,14 @@ globalkeys = awful.util.table.join(
 	
 	-- resize tilling windows 
 	-- awful.key({ modkey, "Shift" }, "h", function () awful.tag.incmwfact(1) end),	
-	awful.key({ modkey, "Mod1"    }, "Right",     function () awful.tag.incmwfact( 0.01)    end),
-	awful.key({ modkey, "Mod1"    }, "Left",     function () awful.tag.incmwfact(-0.01)    end),
-	awful.key({ modkey, "Mod1"    }, "Down",     function () awful.client.incwfact( 0.01)    end),
-	awful.key({ modkey, "Mod1"    }, "Up",     function () awful.client.incwfact(-0.01)    end),
+	awful.key({ modkey, "Mod1"    }, "Right",     function () 
+        awful.tag.incmwfact( 0.01)    end),
+	awful.key({ modkey, "Mod1"    }, "Left",     function () 
+        awful.tag.incmwfact(-0.01)    end),
+	awful.key({ modkey, "Mod1"    }, "Down",     function () 
+        awful.client.incwfact( 0.01)    end),
+	awful.key({ modkey, "Mod1"    }, "Up",     function () 
+        awful.client.incwfact(-0.01)    end),
     -- By direction client focus
     awful.key({ modkey }, "j",
         function()
@@ -248,11 +270,14 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "e",      awesome.quit),
 	awful.key({ modkey, "Shift"   }, "p",	   function () awful.util.spawn("thunar") end),
     awful.key({ modkey, "Shift"   }, "l",      function () 
-        awful.util.spawn("i3lock -i ~/.i3/lock.png") end ),
+        awful.util.spawn("i3lock -i /home/lunix4/.i3/lock.png") end ),
     -- MPD
-    awful.key({         }, "XF86AudioPlay", function () awful.util.spawn("mpc toggle")  end),
-    awful.key({         }, "XF86AudioNext", function () awful.util.spawn("mpc next")	end),
-	awful.key({			}, "XF86AudioPrev", function () awful.util.spawn("mpc prev")	end),
+    awful.key({         }, "XF86AudioPlay", function () 
+        awful.util.spawn("mpc toggle")  end),
+    awful.key({         }, "XF86AudioNext", function () 
+        awful.util.spawn("mpc next")	end),
+	awful.key({			}, "XF86AudioPrev", function () 
+        awful.util.spawn("mpc prev")	end),
 
     -- Ibus control 
     awful.key({ modkey  }, "v",
@@ -268,7 +293,9 @@ globalkeys = awful.util.table.join(
             awful.util.spawn("ibus engine 'xkb:us::eng'")
         end),
     -- User programs
-    awful.key({ modkey, "Shift" }, "f", function () awful.util.spawn("j4-dmenu-desktop --display-binary --dmenu='dmenu -b -i'") end),
+    awful.key({ modkey, "Shift" }, "f", function () 
+        awful.util.spawn("j4-dmenu-desktop --display-binary --dmenu='dmenu -b -i'") 
+    end),
 	-- run in terminal prompt
 	awful.key({ modkey, "Shift"   }, "r",
           function ()
@@ -281,10 +308,14 @@ globalkeys = awful.util.table.join(
 )
 
 clientkeys = awful.util.table.join(
-    awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
-    awful.key({ modkey, "Shift"   }, "q",      function (c) c:kill()                         end),
-    awful.key({ modkey, "Shift"   }, "space",  function (c) awful.client.floating.toggle(c)  end),
-    awful.key({ modkey, "Shift"   }, "t",      function (c) c.ontop = not c.ontop            end),
+    awful.key({ modkey,           }, "f",      function (c) 
+        c.fullscreen = not c.fullscreen  end),
+    awful.key({ modkey, "Shift"   }, "q",      function (c) 
+        c:kill()                         end),
+    awful.key({ modkey, "Shift"   }, "space",  function (c) 
+        awful.client.floating.toggle(c)  end),
+    awful.key({ modkey, "Shift"   }, "t",      function (c) 
+        c.ontop = not c.ontop            end),
     awful.key({ modkey,           }, "n",
         function (c)
             -- The client currently has the input focus, so it cannot be
@@ -351,9 +382,11 @@ clientbuttons = awful.util.table.join(
 -- Set keys
 root.keys(globalkeys)
 -- }}}
-
-local floating_w = {"Audacious","Smplayer2","feh","Thunar","Engrampa","XTerm","Termite","Textadept","Telegram"}
+--
 -- {{{ Rules
+local floating_w = {"Audacious","Smplayer2","feh","Thunar","Engrampa","XTerm",
+    "Termite","Textadept","Telegram", "MuPDF", "Lxtask"}
+
 awful.rules.rules = {
     -- All clients will match this rule.
     { rule = { },
@@ -364,13 +397,12 @@ awful.rules.rules = {
 					 buttons = clientbuttons,
 					 size_hints_honor = false } },
 
-    --{ rule = { class = "google-chrome" },
-	--	properties = { border_width = 0 } },
-
 	{ rule = { class = "URxvt" },
 		properties = { size_hints_honor = true,
                      skip_taskbar = true } },
 
+    { rule = { class = "google-chrome" },
+		properties = { border_width = 0 } }
 }
 
 --set up floating windows
@@ -385,6 +417,14 @@ end
 
 -- {{{ Signals
 
+client.connect_signal("manage", 
+    function(c,startup) 
+        if not c.size_hints.user_position or c.class == "feh" then
+            awful.placement.under_mouse(c)
+        end
+    end
+)
+
 client.connect_signal("focus",
     function(c)
         c.border_color = beautiful.border_focus
@@ -396,18 +436,4 @@ client.connect_signal("unfocus",
 		c.border_color = beautiful.border_normal 
 	end
 )
--- }}}
-
--- {{{ Arrange signal handler
-for s = 1, screen.count() do screen[s]:connect_signal("arrange", function ()
-        local clients = awful.client.visible(s)
-        local layout  = awful.layout.getname(awful.layout.get(s))
-
-        if #clients > 0 then -- Fine grained borders and floaters control
-            for _, c in pairs(clients) do -- Floaters always have borders
-                c.border_width = beautiful.border_width
-            end
-        end
-      end)
-end
 -- }}}
