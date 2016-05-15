@@ -385,7 +385,7 @@ root.keys(globalkeys)
 --
 -- {{{ Rules
 local floating_w = {"Audacious","Smplayer2","feh","Thunar","Engrampa","XTerm",
-	"Termite","Textadept","Telegram", "MuPDF", "Lxtask"}
+	"Termite","Textadept","Telegram", "MuPDF", "Lxtask","Qstardict"}
 
 awful.rules.rules = {
 	-- All clients will match this rule.
